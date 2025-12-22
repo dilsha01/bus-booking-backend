@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const { sequelize, testConnection } = require('./config/db');
+const { seedDatabase } = require('./seed');
 const tripRoutes = require('./routes/tripRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 
@@ -13,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Bus Booking API is running' });
+  res.json({ message: 'RideWay Bus Booking API is running' });
 });
 
 app.use('/api/trips', tripRoutes);
@@ -24,12 +25,19 @@ async function start() {
   try {
     await sequelize.sync({ alter: true });
     console.log('✅ Database synchronized');
+
+    // Seed database if no trips exist
+    const Trip = require('./models/Trip');
+    const count = await Trip.count();
+    if (count === 0) {
+      await seedDatabase();
+    }
   } catch (err) {
     console.error('❌ Failed to sync database:', err.message);
   }
 
   app.listen(PORT, () => {
-    console.log(`🚍 Bus Booking API listening on port ${PORT}`);
+    console.log(`🚍 RideWay API listening on port ${PORT}`);
   });
 }
 
