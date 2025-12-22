@@ -6,6 +6,8 @@ const { sequelize, testConnection } = require('./config/db');
 const { seedDatabase } = require('./seed');
 const tripRoutes = require('./routes/tripRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const busRoutes = require('./routes/busRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -19,6 +21,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/trips', tripRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/buses', busRoutes);
+app.use('/api/admin', adminRoutes);
 
 async function start() {
   await testConnection();

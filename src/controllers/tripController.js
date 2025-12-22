@@ -11,6 +11,19 @@ async function listTrips(req, res) {
   }
 }
 
+async function getTrip(req, res) {
+  try {
+    const trip = await Trip.findByPk(req.params.id, { include: Bus });
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+    res.json(trip);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch trip' });
+  }
+}
+
 async function createTrip(req, res) {
   try {
     const trip = await Trip.create(req.body);
@@ -21,4 +34,32 @@ async function createTrip(req, res) {
   }
 }
 
-module.exports = { listTrips, createTrip };
+async function updateTrip(req, res) {
+  try {
+    const trip = await Trip.findByPk(req.params.id);
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+    await trip.update(req.body);
+    res.json(trip);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: 'Failed to update trip', error: err.message });
+  }
+}
+
+async function deleteTrip(req, res) {
+  try {
+    const trip = await Trip.findByPk(req.params.id);
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+    await trip.destroy();
+    res.json({ message: 'Trip deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to delete trip', error: err.message });
+  }
+}
+
+module.exports = { listTrips, getTrip, createTrip, updateTrip, deleteTrip };
