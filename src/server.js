@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'RideWay Bus Booking API is running' });
+  res.json({ message: 'BusGo Bus Booking API is running' });
 });
 
 app.use('/api/trips', tripRoutes);
@@ -41,7 +41,7 @@ async function start() {
   }
 
   app.listen(PORT, () => {
-    console.log(`🚍 RideWay API listening on port ${PORT}`);
+    console.log(`🚍 BusGo API listening on port ${PORT}`);
   });
 }
 
