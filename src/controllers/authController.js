@@ -126,8 +126,13 @@ async function verifyEmail(req, res) {
     user.verificationTokenExpiry = null;
     await user.save();
 
-    // Send welcome email
-    await sendWelcomeEmail(user);
+    // Send welcome email (don't fail if email sending fails)
+    try {
+      await sendWelcomeEmail(user);
+    } catch (emailError) {
+      console.warn('Welcome email failed to send, but verification succeeded:', emailError.message);
+      // Continue anyway - email is not critical
+    }
 
     // Generate token for auto-login
     const jwtToken = jwt.sign(
@@ -135,6 +140,8 @@ async function verifyEmail(req, res) {
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
+
+    console.log('✅ Email verified successfully for user:', user.email);
 
     res.json({
       success: true,
