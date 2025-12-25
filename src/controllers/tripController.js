@@ -1,5 +1,5 @@
-const Trip = require('../models/Trip');
-const Bus = require('../models/Bus');
+const Trip = require('../models/trip');
+const Bus = require('../models/bus');
 const { Op } = require('sequelize');
 
 async function listTrips(req, res) {

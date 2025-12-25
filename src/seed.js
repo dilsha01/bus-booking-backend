@@ -1,7 +1,7 @@
 const { sequelize } = require('./config/db');
-const Bus = require('./models/Bus');
-const Trip = require('./models/Trip');
-const User = require('./models/User');
+const Bus = require('./models/bus');
+const Trip = require('./models/trip');
+const User = require('./models/user');
 const bcrypt = require('bcryptjs');
 
 async function seedDatabase() {
@@ -19,12 +19,14 @@ async function seedDatabase() {
         email: 'customer@test.com',
         passwordHash: customerPassword,
         role: 'customer',
+        isVerified: true, // Test account - pre-verified
       },
       {
         name: 'Admin User',
         email: 'admin@test.com',
         passwordHash: adminPassword,
         role: 'admin',
+        isVerified: true, // Test account - pre-verified
       },
     ]);
 

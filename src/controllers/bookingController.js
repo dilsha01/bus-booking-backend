@@ -1,7 +1,7 @@
-const Booking = require('../models/Booking');
-const Trip = require('../models/Trip');
-const User = require('../models/User');
-const Bus = require('../models/Bus');
+const Booking = require('../models/booking');
+const Trip = require('../models/trip');
+const User = require('../models/user');
+const Bus = require('../models/bus');
 const { Op } = require('sequelize');
 
 async function listBookings(req, res) {

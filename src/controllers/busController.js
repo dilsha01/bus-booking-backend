@@ -1,4 +1,4 @@
-const Bus = require('../models/Bus');
+const Bus = require('../models/bus');
 
 async function listBuses(req, res) {
   try {

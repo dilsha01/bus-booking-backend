@@ -82,7 +82,7 @@ async function start() {
     console.log('✅ Database synchronized');
 
     // Seed database if no trips exist
-    const Trip = require('./models/Trip');
+    const Trip = require('./models/trip');
     const count = await Trip.count();
     if (count === 0) {
       console.log('📦 Seeding database...');

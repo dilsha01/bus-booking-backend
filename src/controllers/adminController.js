@@ -1,6 +1,6 @@
-const Bus = require('../models/Bus');
-const Trip = require('../models/Trip');
-const Booking = require('../models/Booking');
+const Bus = require('../models/bus');
+const Trip = require('../models/trip');
+const Booking = require('../models/booking');
 const { sequelize } = require('../config/db');
 
 async function getDashboardStats(req, res) {
