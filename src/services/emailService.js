@@ -43,7 +43,7 @@ const sendVerificationEmail = async (user, token) => {
       console.log('   Configure EMAIL_USER and EMAIL_PASS in .env to send real emails');
       console.log('========================================');
       console.log('To:', user.email);
-      console.log('Subject: Verify Your BusGo Account');
+      console.log('Subject: Verify Your RideWay Account');
       console.log('\n🔗 Verification Link:');
       console.log(verificationUrl);
       console.log('========================================\n');
@@ -52,9 +52,9 @@ const sendVerificationEmail = async (user, token) => {
     }
     
     const mailOptions = {
-      from: `"BusGo" <${EMAIL_USER}>`,
+      from: `"RideWay" <${EMAIL_USER}>`,
       to: user.email,
-      subject: 'Verify Your BusGo Account',
+      subject: 'Verify Your RideWay Account',
       html: `
         <!DOCTYPE html>
         <html>
@@ -71,11 +71,11 @@ const sendVerificationEmail = async (user, token) => {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🚍 Welcome to BusGo!</h1>
+              <h1>🚍 Welcome to RideWay!</h1>
             </div>
             <div class="content">
               <h2>Hi ${user.name},</h2>
-              <p>Thank you for signing up with BusGo! We're excited to have you on board.</p>
+              <p>Thank you for signing up with RideWay! We're excited to have you on board.</p>
               <p>To complete your registration and start booking bus tickets, please verify your email address by clicking the button below:</p>
               <div style="text-align: center;">
                 <a href="${verificationUrl}" class="button">Verify Email Address</a>
@@ -83,13 +83,13 @@ const sendVerificationEmail = async (user, token) => {
               <p>Or copy and paste this link into your browser:</p>
               <p style="word-break: break-all; color: #666; font-size: 14px;">${verificationUrl}</p>
               <p><strong>This link will expire in 24 hours.</strong></p>
-              <p>If you didn't create an account with BusGo, please ignore this email.</p>
-              <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-              <p>Happy travels!<br>The BusGo Team</p>
+              <p>If you didn't create an account with RideWay, please ignore this email.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+              <p>Happy travels!<br>The RideWay Team</p>
             </div>
             <div class="footer">
               <p>This is an automated email. Please do not reply to this message.</p>
-              <p>&copy; ${new Date().getFullYear()} BusGo. All rights reserved.</p>
+              <p>&copy; ${new Date().getFullYear()} RideWay. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -136,9 +136,9 @@ const sendWelcomeEmail = async (user) => {
     }
     
     const mailOptions = {
-      from: `"BusGo" <${EMAIL_USER}>`,
+      from: `"RideWay" <${EMAIL_USER}>`,
       to: user.email,
-      subject: 'Welcome to BusGo - Email Verified!',
+      subject: 'Welcome to RideWay - Email Verified!',
       html: `
         <!DOCTYPE html>
         <html>
@@ -158,7 +158,7 @@ const sendWelcomeEmail = async (user) => {
             </div>
             <div class="content">
               <h2>Welcome aboard, ${user.name}!</h2>
-              <p>Your email has been successfully verified. You can now enjoy all the benefits of BusGo:</p>
+              <p>Your email has been successfully verified. You can now enjoy all the benefits of RideWay:</p>
               <ul>
                 <li>✓ Search and book bus tickets</li>
                 <li>✓ View and manage your bookings</li>

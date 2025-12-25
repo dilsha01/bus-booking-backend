@@ -45,10 +45,10 @@ async function testEmail() {
         <div style="font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5;">
           <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px;">
             <h2 style="color: #1a4d7a;">✅ Email Configuration Successful!</h2>
-            <p>Your BusGo email service is working correctly.</p>
-            <p>You can now send verification emails to users.</p>
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-            <p style="color: #666; font-size: 14px;">This is a test email from BusGo backend.</p>
+            <p>Your RideWay email service is working correctly.</p>
+            <p>You can now send verification emails to your users.</p>
+            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+            <p style="color: #666; font-size: 14px;">This is a test email from RideWay backend.</p>
           </div>
         </div>
       `,

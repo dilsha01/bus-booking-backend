@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   res.json({ 
     status: 'healthy',
-    message: 'BusGo Bus Booking API is running',
+    message: 'RideWay Bus Booking API is running',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
   });
@@ -92,7 +92,7 @@ async function start() {
 
     // Start server
     app.listen(PORT, () => {
-      console.log(`🚍 BusGo API listening on port ${PORT}`);
+      console.log(`🚍 RideWay API listening on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔗 API URL: http://localhost:${PORT}`);
     });
