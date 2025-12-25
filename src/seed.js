@@ -10,7 +10,7 @@ async function seedDatabase() {
 
     // Hash passwords for test users
     const customerPassword = await bcrypt.hash('customer123', 10);
-    const adminPassword = await bcrypt.hash('admin123', 10);
+    const adminPassword = await bcrypt.hash('Passw0rd', 10);
 
     // Create sample users
     await User.bulkCreate([

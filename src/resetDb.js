@@ -22,7 +22,7 @@ async function resetDatabase() {
     
     console.log('\n📝 Test Accounts Created:');
     console.log('   Customer: customer@test.com / customer123');
-    console.log('   Admin: admin@test.com / admin123');
+    console.log('   Admin: admin@test.com / Passw0rd');
     console.log('\n✨ Database is ready to use!');
     
     process.exit(0);
