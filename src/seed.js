@@ -2,23 +2,28 @@ const { sequelize } = require('./config/db');
 const Bus = require('./models/Bus');
 const Trip = require('./models/Trip');
 const User = require('./models/User');
+const bcrypt = require('bcryptjs');
 
 async function seedDatabase() {
   try {
     console.log('🌱 Seeding database...');
 
+    // Hash passwords for test users
+    const customerPassword = await bcrypt.hash('customer123', 10);
+    const adminPassword = await bcrypt.hash('admin123', 10);
+
     // Create sample users
     await User.bulkCreate([
       {
         name: 'John Doe',
-        email: 'john@example.com',
-        passwordHash: 'hashed_password_here',
+        email: 'customer@test.com',
+        passwordHash: customerPassword,
         role: 'customer',
       },
       {
         name: 'Admin User',
-        email: 'admin@rideway.lk',
-        passwordHash: 'hashed_password_here',
+        email: 'admin@test.com',
+        passwordHash: adminPassword,
         role: 'admin',
       },
     ]);
