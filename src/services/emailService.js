@@ -1,6 +1,5 @@
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const { Resend } = require('resend');
 
 // Email configuration
 const EMAIL_USER = process.env.EMAIL_USER || 'your-email@gmail.com';
@@ -15,8 +14,34 @@ console.log('   RESEND_API_KEY:', RESEND_API_KEY ? '✅ Set' : '❌ Not Set');
 console.log('   EMAIL_FROM:', EMAIL_FROM);
 console.log('   NODE_ENV:', process.env.NODE_ENV);
 
-// Resend client (used when RESEND_API_KEY is configured)
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+// Lightweight helper to call Resend HTTP API using global fetch (Node 18+)
+const sendWithResend = async (payload) => {
+  if (!RESEND_API_KEY) return null;
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    console.error('❌ Resend API error:', data || response.statusText);
+    throw new Error(data?.message || `Resend API error: ${response.status}`);
+  }
+
+  console.log('✅ Email sent via Resend to:', payload.to);
+  return data;
+};
+
+// Resend client shim (matches previous usage: resend.emails.send)
+const resend = RESEND_API_KEY
+  ? { emails: { send: sendWithResend } }
+  : null;
 
 // Create transporter
 const createTransporter = () => {
