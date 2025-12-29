@@ -9,7 +9,7 @@ const Bus = sequelize.define('Bus', {
   },
   name: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   numberPlate: {
     type: DataTypes.STRING,
@@ -19,6 +19,14 @@ const Bus = sequelize.define('Bus', {
   totalSeats: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  company: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  type: {
+    type: DataTypes.ENUM('XL', 'AC', 'S', 'N'),
+    allowNull: true,
   },
 });
 

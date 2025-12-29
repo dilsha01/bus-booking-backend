@@ -32,10 +32,30 @@ async function seedDatabase() {
 
     // Create sample buses
     const buses = await Bus.bulkCreate([
-      { name: 'Express Luxury', numberPlate: 'CAB-1234', totalSeats: 45 },
-      { name: 'Super Deluxe', numberPlate: 'KAN-5678', totalSeats: 50 },
-      { name: 'Royal Express', numberPlate: 'GAL-9012', totalSeats: 40 },
-      { name: 'Comfort Plus', numberPlate: 'JAF-3456', totalSeats: 48 },
+      {
+        numberPlate: 'NA-1234',
+        totalSeats: 45,
+        company: 'City Express',
+        type: 'XL',
+      },
+      {
+        numberPlate: 'NB-5678',
+        totalSeats: 50,
+        company: 'Highway Star',
+        type: 'AC',
+      },
+      {
+        numberPlate: 'NC-9012',
+        totalSeats: 40,
+        company: 'Royal Travels',
+        type: 'S',
+      },
+      {
+        numberPlate: 'ND-3456',
+        totalSeats: 48,
+        company: 'Comfort Lines',
+        type: 'N',
+      },
     ]);
 
     // Create sample trips
