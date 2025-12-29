@@ -65,14 +65,62 @@ async function seedDatabase() {
 
     const trips = [];
     const routes = [
-      { origin: 'Colombo', destination: 'Kandy', duration: 3 },
-      { origin: 'Colombo', destination: 'Galle', duration: 2.5 },
-      { origin: 'Kandy', destination: 'Jaffna', duration: 6 },
-      { origin: 'Negombo', destination: 'Ella', duration: 7 },
-      { origin: 'Colombo', destination: 'Anuradhapura', duration: 4 },
-      { origin: 'Galle', destination: 'Matara', duration: 1.5 },
-      { origin: 'Colombo', destination: 'Trincomalee', duration: 6.5 },
-      { origin: 'Kandy', destination: 'Nuwara Eliya', duration: 2 },
+      {
+        origin: 'Colombo',
+        destination: 'Kandy',
+        duration: 3,
+        routeNumber: '01',
+        stops: ['Colombo', 'Kiribathgoda', 'Nittambuwa', 'Warakapola', 'Kegalle', 'Mawanella', 'Peradeniya', 'Kandy'],
+      },
+      {
+        origin: 'Colombo',
+        destination: 'Galle',
+        duration: 2.5,
+        routeNumber: '02',
+        stops: ['Colombo', 'Panadura', 'Kalutara', 'Aluthgama', 'Ambalangoda', 'Hikkaduwa', 'Galle'],
+      },
+      {
+        origin: 'Kandy',
+        destination: 'Jaffna',
+        duration: 6,
+        routeNumber: '03',
+        stops: ['Kandy', 'Kurunegala', 'Dambulla', 'Vavuniya', 'Kilinochchi', 'Jaffna'],
+      },
+      {
+        origin: 'Negombo',
+        destination: 'Ella',
+        duration: 7,
+        routeNumber: '04',
+        stops: ['Negombo', 'Peliyagoda', 'Pettah', 'Ratnapura', 'Balangoda', 'Wellawaya', 'Ella'],
+      },
+      {
+        origin: 'Colombo',
+        destination: 'Anuradhapura',
+        duration: 4,
+        routeNumber: '05',
+        stops: ['Colombo', 'Puttalam', 'Chilaw', 'Nochchiyagama', 'Anuradhapura'],
+      },
+      {
+        origin: 'Galle',
+        destination: 'Matara',
+        duration: 1.5,
+        routeNumber: '06',
+        stops: ['Galle', 'Weligama', 'Mirissa', 'Matara'],
+      },
+      {
+        origin: 'Colombo',
+        destination: 'Trincomalee',
+        duration: 6.5,
+        routeNumber: '07',
+        stops: ['Colombo', 'Kurunegala', 'Dambulla', 'Habarana', 'Kantale', 'Trincomalee'],
+      },
+      {
+        origin: 'Kandy',
+        destination: 'Nuwara Eliya',
+        duration: 2,
+        routeNumber: '08',
+        stops: ['Kandy', 'Peradeniya', 'Gampola', 'Pussellawa', 'Nuwara Eliya'],
+      },
     ];
 
     routes.forEach((route, index) => {
@@ -89,6 +137,8 @@ async function seedDatabase() {
         departureTime: departureTime.toISOString(),
         arrivalTime: arrivalTime.toISOString(),
         price: (500 + Math.random() * 2000).toFixed(2),
+        routeNumber: route.routeNumber,
+        stops: route.stops,
         busId: buses[index % buses.length].id,
       });
     });

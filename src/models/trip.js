@@ -16,6 +16,11 @@ const Trip = sequelize.define('Trip', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  // Route number, e.g. "138" for Maharagama - Colombo
+  routeNumber: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   departureTime: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -27,6 +32,11 @@ const Trip = sequelize.define('Trip', {
   price: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
+  },
+  // Ordered list of stops/sections along the route, including origin and destination
+  stops: {
+    type: DataTypes.JSON,
+    allowNull: true,
   },
 });
 

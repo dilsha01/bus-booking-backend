@@ -17,6 +17,21 @@ const Booking = sequelize.define('Booking', {
     type: DataTypes.ENUM('pending', 'confirmed', 'cancelled'),
     defaultValue: 'confirmed',
   },
+  // Boarding stop name within the route (section start)
+  startStop: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  // Drop-off stop name within the route (section end)
+  endStop: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  // Total price for this booking (all seats, this section)
+  totalPrice: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+  },
 });
 
 User.hasMany(Booking, { foreignKey: 'userId' });

@@ -81,7 +81,7 @@ async function getBooking(req, res) {
 
 async function createBooking(req, res) {
   try {
-    const { userId, tripId, seats } = req.body;
+    const { userId, tripId, seats, startStop, endStop } = req.body;
     
     // Validation
     if (!userId || !tripId || !seats) {
@@ -105,6 +105,28 @@ async function createBooking(req, res) {
         success: false,
         message: 'Trip not found',
       });
+    }
+
+    // Validate section selection if provided
+    let totalPrice = null;
+    if (startStop && endStop && Array.isArray(trip.stops) && trip.stops.length >= 2) {
+      const stops = trip.stops;
+      const fromIndex = stops.findIndex((s) => s.toLowerCase() === String(startStop).toLowerCase());
+      const toIndex = stops.findIndex((s) => s.toLowerCase() === String(endStop).toLowerCase());
+
+      if (fromIndex === -1 || toIndex === -1 || fromIndex >= toIndex) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid section selection for this route',
+        });
+      }
+
+      const fullSegments = stops.length - 1;
+      const basePrice = parseFloat(trip.price); // full route price per seat
+      const pricePerSegment = fullSegments > 0 ? basePrice / fullSegments : basePrice;
+      const segmentCount = toIndex - fromIndex;
+      const pricePerSeatForSection = pricePerSegment * segmentCount;
+      totalPrice = Number((pricePerSeatForSection * seats).toFixed(2));
     }
     
     // Check seat availability
@@ -132,6 +154,9 @@ async function createBooking(req, res) {
       tripId,
       seats,
       status: 'confirmed',
+      startStop: startStop || null,
+      endStop: endStop || null,
+      totalPrice,
     });
     
     // Fetch complete booking with relations
