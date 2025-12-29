@@ -1,6 +1,7 @@
 const { sequelize } = require('./config/db');
 const Bus = require('./models/bus');
 const Trip = require('./models/trip');
+const Route = require('./models/route');
 const User = require('./models/user');
 const bcrypt = require('bcryptjs');
 
@@ -64,7 +65,7 @@ async function seedDatabase() {
     tomorrow.setHours(8, 0, 0, 0);
 
     const trips = [];
-    const routes = [
+    const routeDefinitions = [
       {
         origin: 'Colombo',
         destination: 'Kandy',
@@ -123,13 +124,35 @@ async function seedDatabase() {
       },
     ];
 
-    routes.forEach((route, index) => {
+    // First create Route records. For each definition we create
+    // four category-specific routes: XL, AC, S, N.
+    const categories = ['XL', 'AC', 'S', 'N'];
+
+    const createdRoutes = [];
+
+    for (const def of routeDefinitions) {
+      for (const category of categories) {
+        const route = await Route.create({
+          routeNumber: def.routeNumber,
+          origin: def.origin,
+          destination: def.destination,
+          category,
+          stops: def.stops,
+        });
+        createdRoutes.push({ def, route, category });
+      }
+    }
+
+    createdRoutes.forEach(({ def, route, category }, index) => {
       const departureTime = new Date(tomorrow);
-      departureTime.setHours(8 + index, 0, 0, 0);
-      
+      departureTime.setHours(8 + (index % routeDefinitions.length), 0, 0, 0);
+
       const arrivalTime = new Date(departureTime);
-      arrivalTime.setHours(arrivalTime.getHours() + Math.floor(route.duration));
-      arrivalTime.setMinutes(arrivalTime.getMinutes() + (route.duration % 1) * 60);
+      arrivalTime.setHours(arrivalTime.getHours() + Math.floor(def.duration));
+      arrivalTime.setMinutes(arrivalTime.getMinutes() + (def.duration % 1) * 60);
+
+      // Try to pick a bus that matches the category; fall back to first bus
+      const matchingBus = buses.find((b) => b.type === category) || buses[0];
 
       trips.push({
         origin: route.origin,
@@ -139,7 +162,8 @@ async function seedDatabase() {
         price: (500 + Math.random() * 2000).toFixed(2),
         routeNumber: route.routeNumber,
         stops: route.stops,
-        busId: buses[index % buses.length].id,
+        routeId: route.id,
+        busId: matchingBus.id,
       });
     });
 

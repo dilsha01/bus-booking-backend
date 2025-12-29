@@ -1,12 +1,17 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 const Bus = require('./bus');
+const Route = require('./route');
 
 const Trip = sequelize.define('Trip', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
+  },
+  routeId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   origin: {
     type: DataTypes.STRING,
@@ -42,5 +47,7 @@ const Trip = sequelize.define('Trip', {
 
 Bus.hasMany(Trip, { foreignKey: 'busId' });
 Trip.belongsTo(Bus, { foreignKey: 'busId' });
+
+Trip.belongsTo(Route, { foreignKey: 'routeId', as: 'Route' });
 
 module.exports = Trip;
