@@ -61,7 +61,7 @@ const createTransporter = () => {
   }
 };
 
-// Generate verification token
+// Generate verification/reset token
 const generateVerificationToken = () => {
   return crypto.randomBytes(32).toString('hex');
 };
@@ -335,8 +335,163 @@ const sendWelcomeEmail = async (user) => {
   }
 };
 
+// Send password reset email
+const sendPasswordResetEmail = async (user, token) => {
+  const resetUrl = `${FRONTEND_URL}/reset-password?token=${token}`;
+
+  try {
+    // Prefer Resend if configured
+    if (resend) {
+      const result = await resend.emails.send({
+        from: EMAIL_FROM,
+        to: user.email,
+        subject: 'Reset your RideWay password',
+        html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #1a4d7a 0%, #0f3554 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; padding: 15px 30px; background: #ff6b35; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Reset your password</h1>
+            </div>
+            <div class="content">
+              <h2>Hi ${user.name},</h2>
+              <p>We received a request to reset the password for your RideWay account.</p>
+              <p>If you made this request, click the button below to choose a new password:</p>
+              <div style="text-align: center;">
+                <a href="${resetUrl}" class="button">Reset Password</a>
+              </div>
+              <p>Or copy and paste this link into your browser:</p>
+              <p style="word-break: break-all; color: #666; font-size: 14px;">${resetUrl}</p>
+              <p><strong>This link will expire in 1 hour.</strong></p>
+              <p>If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+              <p>Stay safe,<br>The RideWay Team</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated email. Please do not reply to this message.</p>
+              <p>&copy; ${new Date().getFullYear()} RideWay. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+        text: `
+        Hi ${user.name},
+
+        We received a request to reset the password for your RideWay account.
+
+        If you made this request, visit the link below to set a new password (valid for 1 hour):
+        ${resetUrl}
+
+        If you didn't request a password reset, you can safely ignore this email.
+
+        Stay safe,
+        The RideWay Team
+      `,
+      });
+
+      console.log('✅ Password reset email sent via Resend to:', user.email);
+      return { success: true, messageId: result?.id || result?.data?.id || 'resend' };
+    }
+
+    const transporter = createTransporter();
+
+    // If no transporter, just log in dev mode
+    if (!transporter) {
+      console.log('\n📧 ========================================');
+      console.log('   PASSWORD RESET EMAIL (Development Mode)');
+      console.log('   Configure EMAIL_USER and EMAIL_PASS in .env to send real emails');
+      console.log('========================================');
+      console.log('To:', user.email);
+      console.log('Subject: Reset your RideWay password');
+      console.log('\n🔗 Reset Link:');
+      console.log(resetUrl);
+      console.log('========================================\n');
+
+      return { success: true, messageId: 'dev-mode-no-email' };
+    }
+
+    const mailOptions = {
+      from: `"RideWay" <${EMAIL_USER}>`,
+      to: user.email,
+      subject: 'Reset your RideWay password',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #1a4d7a 0%, #0f3554 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .button { display: inline-block; padding: 15px 30px; background: #ff6b35; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Reset your password</h1>
+            </div>
+            <div class="content">
+              <h2>Hi ${user.name},</h2>
+              <p>We received a request to reset the password for your RideWay account.</p>
+              <p>If you made this request, click the button below to choose a new password:</p>
+              <div style="text-align: center;">
+                <a href="${resetUrl}" class="button">Reset Password</a>
+              </div>
+              <p>Or copy and paste this link into your browser:</p>
+              <p style="word-break: break-all; color: #666; font-size: 14px;">${resetUrl}</p>
+              <p><strong>This link will expire in 1 hour.</strong></p>
+              <p>If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.</p>
+              <p>Stay safe,<br>The RideWay Team</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+      text: `
+        Hi ${user.name},
+
+        We received a request to reset the password for your RideWay account.
+
+        If you made this request, visit the link below to set a new password (valid for 1 hour):
+        ${resetUrl}
+
+        If you didn't request a password reset, you can safely ignore this email.
+
+        Stay safe,
+        The RideWay Team
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Password reset email sent successfully to:', user.email);
+    console.log('   Message ID:', info.messageId);
+
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('❌ Failed to send password reset email:', error.message);
+    console.error('   Full error:', error);
+    if (error.code) console.error('   Error code:', error.code);
+    if (error.response) console.error('   SMTP Response:', error.response);
+    throw error;
+  }
+};
+
 module.exports = {
   generateVerificationToken,
   sendVerificationEmail,
   sendWelcomeEmail,
+  sendPasswordResetEmail,
 };

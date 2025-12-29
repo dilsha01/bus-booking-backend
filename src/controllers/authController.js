@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail } = require('../services/emailService');
+const { generateVerificationToken, sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } = require('../services/emailService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '7d';
@@ -375,5 +375,96 @@ async function getMe(req, res) {
     });
   }
 }
+// Request password reset
+async function requestPasswordReset(req, res) {
+  try {
+    const { email } = req.body;
 
-module.exports = { register, login, getMe, verifyEmail, resendVerification };
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required',
+      });
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    // Always respond with success message to prevent email enumeration
+    const genericResponse = {
+      success: true,
+      message: 'If an account with that email exists, a password reset link has been sent.',
+    };
+
+    if (!user || !user.isVerified) {
+      return res.json(genericResponse);
+    }
+
+    const resetToken = generateVerificationToken();
+    const resetPasswordExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpiry = resetPasswordExpiry;
+    await user.save();
+
+    try {
+      await sendPasswordResetEmail(user, resetToken);
+    } catch (emailError) {
+      console.error('Failed to send password reset email:', emailError);
+      // Still return generic success message
+    }
+
+    return res.json(genericResponse);
+  } catch (error) {
+    console.error('Request password reset error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to process password reset request',
+      error: error.message,
+    });
+  }
+}
+
+// Reset password
+async function resetPassword(req, res) {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token and new password are required',
+      });
+    }
+
+    const user = await User.findOne({ where: { resetPasswordToken: token } });
+
+    if (!user || !user.resetPasswordExpiry || user.resetPasswordExpiry < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired password reset token',
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    user.passwordHash = passwordHash;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpiry = null;
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: 'Password has been reset successfully. You can now log in with your new password.',
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reset password',
+      error: error.message,
+    });
+  }
+}
+
+module.exports = { register, login, getMe, verifyEmail, resendVerification, requestPasswordReset, resetPassword };
