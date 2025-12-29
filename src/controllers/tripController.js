@@ -28,14 +28,39 @@ async function listTrips(req, res) {
     
     // Filter by origin/destination using stops (sections) if provided
     if (origin || destination) {
-      const originLower = origin ? String(origin).toLowerCase() : null;
-      const destinationLower = destination ? String(destination).toLowerCase() : null;
+      const originLower = origin ? String(origin).trim().toLowerCase() : null;
+      const destinationLower = destination ? String(destination).trim().toLowerCase() : null;
 
       trips = trips.filter((trip) => {
-        const stops = Array.isArray(trip.stops) ? trip.stops : [];
+        let stops = [];
+
+        // Normalize stops coming from DB: can be JSON array, JSON string, or
+        // a plain comma-separated string depending on MySQL/Sequelize behavior.
+        if (Array.isArray(trip.stops)) {
+          stops = trip.stops;
+        } else if (typeof trip.stops === 'string' && trip.stops.length > 0) {
+          try {
+            const parsed = JSON.parse(trip.stops);
+            if (Array.isArray(parsed)) {
+              stops = parsed;
+            } else {
+              stops = trip.stops.split(',');
+            }
+          } catch {
+            stops = trip.stops.split(',');
+          }
+        }
+
+        // Normalized, lower‑cased stop names (for comparison)
+        const normalizedStops = Array.isArray(stops)
+          ? stops
+              .map((s) => (s != null ? String(s).trim() : ''))
+              .filter((s) => s.length > 0)
+              .map((s) => s.toLowerCase())
+          : [];
 
         // Fallback: if no stops defined, keep old behavior using origin/destination fields
-        if (stops.length === 0) {
+        if (normalizedStops.length === 0) {
           const matchesOrigin = originLower
             ? String(trip.origin || '').toLowerCase().includes(originLower)
             : true;
@@ -46,15 +71,15 @@ async function listTrips(req, res) {
         }
 
         let fromIndex = 0;
-        let toIndex = stops.length - 1;
+        let toIndex = normalizedStops.length - 1;
 
         if (originLower) {
-          fromIndex = stops.findIndex((s) => s.toLowerCase() === originLower);
+          fromIndex = normalizedStops.findIndex((s) => s === originLower);
           if (fromIndex === -1) return false;
         }
 
         if (destinationLower) {
-          toIndex = stops.findIndex((s) => s.toLowerCase() === destinationLower);
+          toIndex = normalizedStops.findIndex((s) => s === destinationLower);
           if (toIndex === -1) return false;
         }
 
