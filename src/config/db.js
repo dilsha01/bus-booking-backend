@@ -10,6 +10,10 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
     dialect: 'mysql',
     logging: false,
+    timezone: '+05:30', // Sri Lankan timezone (GMT+5:30)
+    dialectOptions: {
+      timezone: '+05:30',
+    },
   }
 );
 
